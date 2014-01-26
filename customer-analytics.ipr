@@ -19,7 +19,11 @@
             <element id="library" level="project" name="Maven: com.sun.faces:jsf-api:2.1.7" />
             <element id="library" level="project" name="Maven: com.sun.faces:jsf-impl:2.1.7" />
             <element id="library" level="project" name="Maven: org.primefaces:primefaces:4.0" />
+            <element id="library" level="project" name="Maven: org.primefaces.themes:bootstrap:1.0.10" />
             <element id="library" level="project" name="Maven: org.scribe:scribe:1.3.5" />
+            <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.1" />
+            <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.3.1" />
+            <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.1" />
           </element>
         </element>
       </root>
@@ -70,6 +74,10 @@
     <file type="web" url="file://$PROJECT_DIR$" />
   </component>
   <component name="IdProvider" IDEtalkID="86B9A8DEC116D744FC47E88F6FFB9591" />
+  <component name="JRebel Project data">
+    <option name="privateKey" value="3082025c020100028181009254afefb30ec801ca8fae1783441d247dbcfd4cd42969b9f7a77ec021b470492a136cc31f3c68b406df82820442a0f54b8aa243d061dbfa22225beced4939fdf7d66b9438834afecb8c821b85f61164841d3db5952ff7972397a39e6aa2a7d8e37697c323cac19bb4731f7f59150ad11114ab5d8bbf5f8674ff39bf2e17cf2d020301000102818048396a7919dcd2d527809141e3b54bd90602b0d729e4a2dd7a21fecaa0182a4fc267c207f0b3e54dee12859cdcb37234802b95f978b1c45c8a5a811ac8e79aaa424d77b9b09401a872c5dada47e3f5acfb80c26a6a1223f985cf6e77c9ff2caf3e3baeade6810b2c0af9885cce95bbaef71bb7359076c1e12fc4c61ff3faf375024100d8ceab8cd10f99a21a70d1cabfa844bf8d6d155a2dc232beabdb1848a6b3f1b2350bce870ba323f2041c15b3e25d56d00b95884587e97f0fc6d0bca686cd36ef024100acc8880af27fa229cad5b2dce1a33877b782e19a5776244b131db04ae1330b8ab38dd4ac8dac408f4b3b560172605823793a6c74bf7e743cd49cf8b1b8877ba3024100c1fbf8c65ff00358652bf8a9ddde22d4f92756e97ef3b90f9d18c59b8b7c898f17a35ec0ba0ad8089ce0bc125d418281573c0dd79889b4e45ad13d5a0a56e70502403ab12bb53c46aad933737ffc941113bf66f0e89dbb1400a417ec3fd44fc73d267273bd48981f6916c3e17607abc89a6802681c2b54592a36f7aa12b89c0c39ad02402509d382ba7fd06d896ed982f2e11272cdeee8a3688043a90a771ca4ce408a8d83119f24905f5ef1a85e0e1a07be2d08f31910b241362d5bdfc6d92240a68fc2" />
+    <option name="publicKey" value="308189028181009254afefb30ec801ca8fae1783441d247dbcfd4cd42969b9f7a77ec021b470492a136cc31f3c68b406df82820442a0f54b8aa243d061dbfa22225beced4939fdf7d66b9438834afecb8c821b85f61164841d3db5952ff7972397a39e6aa2a7d8e37697c323cac19bb4731f7f59150ad11114ab5d8bbf5f8674ff39bf2e17cf2d0203010001" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
@@ -211,6 +219,39 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
   </component>
   <component name="libraryTable">
+    <library name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.3.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.3.1/jackson-annotations-2.3.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.3.1/jackson-annotations-2.3.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.3.1/jackson-annotations-2.3.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.3.1/jackson-core-2.3.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.3.1/jackson-core-2.3.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.3.1/jackson-core-2.3.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.3.1/jackson-databind-2.3.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.3.1/jackson-databind-2.3.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.3.1/jackson-databind-2.3.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: com.sun.faces:jsf-api:2.1.7">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/com/sun/faces/jsf-api/2.1.7/jsf-api-2.1.7.jar!/" />
@@ -242,6 +283,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/javax/javaee-web-api/7.0/javaee-web-api-7.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.primefaces.themes:bootstrap:1.0.10">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/primefaces/themes/bootstrap/1.0.10/bootstrap-1.0.10.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/primefaces/themes/bootstrap/1.0.10/bootstrap-1.0.10-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/primefaces/themes/bootstrap/1.0.10/bootstrap-1.0.10-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.primefaces:primefaces:4.0">

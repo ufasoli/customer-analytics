@@ -1,31 +1,66 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui" >
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        template="WEB-INF/template/template.xhtml">
 
-<h:body>
-    <h3>Hello</h3>
-
-    <h:form>
-
-        <h:inputText value="#{socialAPIBean.acceptToken}" />
-
-        <br />
-
-        <h:outputText value="#{socialAPIBean.authorisationUrl}" />
-        <br />
-
-        <h:commandLink action="#{socialAPIBean.testXing()}" value="Run"/>
-
-        <br />
+    <ui:define name="content">
 
 
-        <h:commandLink action="#{socialAPIBean.validateAccess()}" value="requestAccess"/>
+        <h:form prependId="false" id="authenticationForm">
 
-        <h:inputTextarea value="#{socialAPIBean.apiResponse}" />
-    </h:form>
-</h:body>
+            <p:fieldset collapsed="true" legend="Api Authentication" toggleable="true">
+                <h:panelGrid columns="3" cellpadding="5">
+                    <h:outputText  value="Validation URL : "/>
+                    <h:outputText id="authorisationUrl" value="#{xingAPIBean.socialMediaWrapper.authorizationUrl}"/>
+                    <h:outputLink
+                            onclick="window.open('#{xingAPIBean.socialMediaWrapper.authorizationUrl}', 'api validation')" value="#" title="open" >Open</h:outputLink>
 
-</html>
+                    <p:outputLabel for="validationPin" value="Validation Pin :"/>
+                    <p:inputText value="#{xingAPIBean.socialMediaWrapper.validationPin}" id="validationPin"/>
+
+
+
+                </h:panelGrid>
+                <p:commandButton value="Validate" action="#{xingAPIBean.validateAccess()}"
+
+                                 ajax="true"
+
+
+                        update="authorisationUrl,validationPin,:msg"/>
+
+
+            </p:fieldset>
+
+        </h:form>
+        <h:form id="userForm" prependId="false">
+             <p:fieldset id="apiInfo" legend="API Info">
+                 <p:inputText id="currentUser"
+                              value="#{xingAPIBean.currentUser}"
+                              required="true" requiredMessage="User id cannot be null (default is 'me')"
+                               placeholder="Xing user id to display information"/>
+
+
+                 <p:commandButton action="#{xingAPIBean.runQuery()}" value="Search" update="userInfo,:msg, :authenticationForm"  ajax="true"/>
+
+                 <p:tabView id="userInfo">
+
+                     <p:tab id="rawData" title="RawData">
+
+                         <p:inputTextarea value="#{xingAPIBean.apiResponse}" cols="150" rows="50"
+                                          style="white-space: pre;" />
+
+
+                     </p:tab>
+
+
+                 </p:tabView>
+             </p:fieldset>
+
+        </h:form>
+
+
+
+    </ui:define>
+</ui:composition>
