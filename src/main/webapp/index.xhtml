@@ -2,15 +2,27 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" >
 
 <h:body>
     <h3>Hello</h3>
 
     <h:form>
 
+        <h:inputText value="#{socialAPIBean.acceptToken}" />
+
+        <br />
+
+        <h:outputText value="#{socialAPIBean.authorisationUrl}" />
+        <br />
 
         <h:commandLink action="#{socialAPIBean.testXing()}" value="Run"/>
+
+        <br />
+
+
+        <h:commandLink action="#{socialAPIBean.validateAccess()}" value="requestAccess"/>
 
         <h:inputTextarea value="#{socialAPIBean.apiResponse}" />
     </h:form>

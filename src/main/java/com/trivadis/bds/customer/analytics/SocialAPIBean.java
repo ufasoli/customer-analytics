@@ -19,36 +19,45 @@ import java.io.Serializable;
 @SessionScoped
 public class SocialAPIBean implements Serializable {
 
-    final String API_KEY ="220e0f61f21949635705";
-    final String API_SECRET ="73612286d1390a5d0a28b3f775feb1897ad66e99";
+    final String API_KEY = "220e0f61f21949635705";
+    final String API_SECRET = "73612286d1390a5d0a28b3f775feb1897ad66e99";
     final String API_BASE_URL = "https://api.xing.com";
 
 
     private String apiResponse;
-  public void testXing(){
+    private String acceptToken;
+    String authorisationUrl;
+    OAuthService service;
+    Token requestToken;
 
-      // Initializing OAuth - Service
-      OAuthService service = new ServiceBuilder()
-              .provider(XingApi.class)
-              .apiKey(API_KEY)
-              .apiSecret(API_SECRET)
-              .build();
+    public void validateAccess() {
 
-
-     Token requestToken =  service.getRequestToken();
-     String authorisationUrl =  service.getAuthorizationUrl(requestToken);
-
-      Verifier verifier = new Verifier(authorisationUrl);
-      Token accessToken = service.getAccessToken(requestToken, verifier);
-
-      OAuthRequest request = new OAuthRequest(Verb.GET, API_BASE_URL+"/v1/users/me");
-      service.signRequest(accessToken, request);
-      Response response = request.send();
+        // Initializing OAuth - Service
+        service = new ServiceBuilder()
+                .provider(XingApi.class)
+                .apiKey(API_KEY)
+                .apiSecret(API_SECRET)
+                .build();
 
 
-      apiResponse = response.getBody();
+        requestToken = service.getRequestToken();
+        authorisationUrl = service.getAuthorizationUrl(requestToken);
+    }
 
-  }
+    public void testXing() {
+
+
+        Verifier verifier = new Verifier(acceptToken);
+        Token accessToken = service.getAccessToken(requestToken, verifier);
+
+        OAuthRequest request = new OAuthRequest(Verb.GET, API_BASE_URL + "/v1/users/me");
+        service.signRequest(accessToken, request);
+        Response response = request.send();
+
+
+        apiResponse = response.getBody();
+
+    }
 
     public String getApiResponse() {
         return apiResponse;
@@ -56,5 +65,21 @@ public class SocialAPIBean implements Serializable {
 
     public void setApiResponse(String apiResponse) {
         this.apiResponse = apiResponse;
+    }
+
+    public String getAcceptToken() {
+        return acceptToken;
+    }
+
+    public void setAcceptToken(String acceptToken) {
+        this.acceptToken = acceptToken;
+    }
+
+    public String getAuthorisationUrl() {
+        return authorisationUrl;
+    }
+
+    public void setAuthorisationUrl(String authorisationUrl) {
+        this.authorisationUrl = authorisationUrl;
     }
 }
