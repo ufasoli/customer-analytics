@@ -18,12 +18,29 @@ public class JsonUtils {
 
     public static String prettifyJSON(String unformattedJson) throws IOException {
 
+
+        JsonNode rootNode = (JsonNode) getMapper().readValue(unformattedJson, JsonNode.class);
+
+        return getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
+    }
+
+
+    public static JsonNode stringToJson(String jsonString){
+
+        try {
+            return getMapper().readValue(jsonString, JsonNode.class);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static ObjectMapper getMapper(){
+
         if(mapper == null){
             mapper = new ObjectMapper();
 
         }
-        JsonNode rootNode = (JsonNode) mapper.readValue(unformattedJson, JsonNode.class);
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode));
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
+
+        return mapper;
     }
 }

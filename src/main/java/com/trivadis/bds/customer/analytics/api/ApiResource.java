@@ -1,6 +1,7 @@
 package com.trivadis.bds.customer.analytics.api;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,6 +14,7 @@ public class ApiResource implements Serializable {
     private String title;
     private String url;
     private String description;
+    private List<String> urlParams;
 
     public ApiResource(){}
 
@@ -25,6 +27,13 @@ public class ApiResource implements Serializable {
         this.title = title;
         this.url = url;
         this.description = description;
+    }
+
+    public ApiResource(String title, String url, String description, List<String> urlParams) {
+        this.title = title;
+        this.url = url;
+        this.description = description;
+        this.urlParams = urlParams;
     }
 
     public String getTitle() {
@@ -49,6 +58,14 @@ public class ApiResource implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<String> getUrlParams() {
+        return urlParams;
+    }
+
+    public void setUrlParams(List<String> urlParams) {
+        this.urlParams = urlParams;
     }
 
     @Override

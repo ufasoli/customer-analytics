@@ -1,7 +1,10 @@
 package com.trivadis.bds.customer.analytics.web.beans.xing;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.trivadis.bds.customer.analytics.api.SocialMediaWrapper;
 import com.trivadis.bds.customer.analytics.api.XingWrapper;
+import com.trivadis.bds.customer.analytics.util.StringUtils;
+import com.trivadis.bds.customer.analytics.util.json.JsonUtils;
 import com.trivadis.bds.customer.analytics.web.beans.sessions.ApiManager;
 import org.scribe.builder.api.XingApi;
 import org.scribe.model.Verb;
@@ -35,6 +38,8 @@ public class XingAPIBean implements Serializable {
     private String apiResponse;
 
     private String currentUser;
+
+    private String currentResource;
 
 
     private SocialMediaWrapper socialMediaWrapper;
@@ -99,7 +104,34 @@ public class XingAPIBean implements Serializable {
                 return;
             }
 
-            apiResponse = socialMediaWrapper.performQuery(Verb.GET, socialMediaWrapper.findUserUrl());
+            if(currentUser == null || currentUser.isEmpty()){
+                String msg = "Cannot Perform Query since current user is null";
+                facesContext.addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
+
+                return;
+            }
+
+            String findUserUrl = socialMediaWrapper.findUserUrl();
+
+            Map<String, Object> values = new HashMap<>();
+            values.put("user_id", currentUser);
+
+            apiResponse = socialMediaWrapper.performQuery(Verb.GET,
+                    StringUtils.formatString(socialMediaWrapper.findUserUrl(), values));
+
+
+            if(currentUser.equals("me") && apiResponse != null && !apiResponse.isEmpty() ){
+
+                JsonNode node = JsonUtils.stringToJson(apiResponse);
+
+                // override "me" with the user's real id
+                currentUser = JsonUtils.stringToJson(apiResponse).findValue("users").findValue("id").asText();
+
+
+            }
+
+
 
         } catch (Exception e) {
             String msg = String.format(
@@ -146,18 +178,11 @@ public class XingAPIBean implements Serializable {
         this.socialMediaWrapper = socialMediaWrapper;
     }
 
-
-    private Map<String,String> apiResources = new HashMap<>();
-
-    public Map<String, String> getApiResources() {
-        if(apiResources.isEmpty()){
-                                 apiResources.put("Test", "http://test");
-            apiResources.put("Test2", "http://test2");
-        }
-        return apiResources;
+    public String getCurrentResource() {
+        return currentResource;
     }
 
-    public void setApiResources(Map<String, String> apiResources) {
-        this.apiResources = apiResources;
+    public void setCurrentResource(String currentResource) {
+        this.currentResource = currentResource;
     }
 }

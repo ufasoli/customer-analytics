@@ -43,11 +43,13 @@
 
 
                  <p:commandButton
-                         action="#{xingAPIBean.findUser()}" value="Search User" update="userInfo,:msg, :authenticationForm"  ajax="true"/>
+                         action="#{xingAPIBean.findUser()}"
+                         value="Search User"
+                         update="userForm, :msg, :authenticationForm"  ajax="true"/>
 
 
 
-                 <p:selectOneMenu value="#{xingAPIBean.currentUser}" label="User Resource"
+                 <p:selectOneMenu value="#{xingAPIBean.currentResource}" label="User Resource"
                                   disabled="#{xingAPIBean.currentUser eq null}">
 
                      <f:selectItems
@@ -55,20 +57,20 @@
                                 var="resource"
                                 itemLabel="#{resource.title}"
                                 itemValue="#{resource.url}"
-                                 itemDescription="#{resource.description}"
                                />
 
 
                  </p:selectOneMenu>
 
                  <p:commandButton
-                         action="#{xingAPIBean.runQuery()}" value="Show Resource" update="userInfo,:msg, :authenticationForm"  ajax="true"/>
+                         action="#{xingAPIBean.runQuery()}"
+                         value="Show Resource" update="userInfo,:msg, :authenticationForm"  ajax="true"/>
 
 
                    </h:panelGrid>
                  <p:tabView id="userInfo">
 
-                     <p:tab id="rawData" title="RawData">
+                     <p:tab id="apiResponse" title="Api Respnse">
 
                          <p:inputTextarea value="#{xingAPIBean.apiResponse}" cols="150" rows="50"
                                           style="white-space: pre;" />
