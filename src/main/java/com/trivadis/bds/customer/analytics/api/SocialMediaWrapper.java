@@ -1,4 +1,4 @@
-package com.trivadis.bds.customer.analytics;
+package com.trivadis.bds.customer.analytics.api;
 
 import com.trivadis.bds.customer.analytics.util.json.JsonUtils;
 import org.scribe.exceptions.OAuthException;
@@ -58,6 +58,25 @@ public class SocialMediaWrapper {
     }
 
 
+    public String performQuery(Verb verb, String url) {
+        OAuthRequest request = new OAuthRequest(Verb.GET, url);
+        getoAuthService().signRequest(accessToken, request);
+        Response response = request.send();
+        String jsonResponse = response.getBody();
+        try{
+
+            jsonResponse = JsonUtils.prettifyJSON(response.getBody());
+        } catch (IOException e) {
+            System.out.println(String.format("An error occurred while formatting the JSON: [%s]", e.getLocalizedMessage()));
+        }
+
+        return jsonResponse;
+
+    }
+
+
+
+
     public Token getAccessToken() {
         return accessToken;
     }
@@ -100,19 +119,5 @@ public class SocialMediaWrapper {
     }
 
 
-    public String performQuery(Verb verb, String url) {
-        OAuthRequest request = new OAuthRequest(Verb.GET, url);
-        getoAuthService().signRequest(accessToken, request);
-        Response response = request.send();
-         String jsonResponse = response.getBody();
-       try{
 
-           jsonResponse = JsonUtils.prettifyJSON(response.getBody());
-       } catch (IOException e) {
-           System.out.println(String.format("An error occurred while formatting the JSON: [%s]", e.getLocalizedMessage()));
-       }
-
-        return jsonResponse;
-
-    }
 }

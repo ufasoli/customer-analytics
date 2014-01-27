@@ -1,7 +1,7 @@
-package com.trivadis.bds.customer.analytics.web;
+package com.trivadis.bds.customer.analytics.web.beans.xing;
 
-import com.trivadis.bds.customer.analytics.ApiManager;
-import com.trivadis.bds.customer.analytics.SocialMediaWrapper;
+import com.trivadis.bds.customer.analytics.web.beans.sessions.ApiManager;
+import com.trivadis.bds.customer.analytics.api.SocialMediaWrapper;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.XingApi;
 import org.scribe.model.Token;
