@@ -1,5 +1,6 @@
 package com.trivadis.bds.customer.analytics.web.beans.xing;
 
+import com.trivadis.bds.customer.analytics.api.XingWrapper;
 import com.trivadis.bds.customer.analytics.web.beans.sessions.ApiManager;
 import com.trivadis.bds.customer.analytics.api.SocialMediaWrapper;
 import org.scribe.builder.ServiceBuilder;
@@ -15,6 +16,8 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,9 +29,7 @@ import java.io.Serializable;
 @ViewScoped
 public class XingAPIBean implements Serializable {
 
-    final String API_KEY = "220e0f61f21949635705";
-    final String API_SECRET = "73612286d1390a5d0a28b3f775feb1897ad66e99";
-    final String API_BASE_URL = "https://api.xing.com";
+
 
 
     @ManagedProperty(value = "#{apiManager}")
@@ -49,17 +50,7 @@ public class XingAPIBean implements Serializable {
         socialMediaWrapper = apiManager.getSocialMediaWrapper(XingApi.class);
 
         if (socialMediaWrapper == null) {
-
-
-            // Initializing OAuth - Service
-            OAuthService service = new ServiceBuilder()
-                    .provider(XingApi.class)
-                    .apiKey(API_KEY)
-                    .apiSecret(API_SECRET)
-                    .build();
-
-
-            socialMediaWrapper = new SocialMediaWrapper(service);
+            socialMediaWrapper = new XingWrapper(XingApi.class);
 
         } else if (!socialMediaWrapper.initialized()) {
 
@@ -76,7 +67,7 @@ public class XingAPIBean implements Serializable {
 
             socialMediaWrapper.generateAccessToken();
 
-            String msg = String.format("Successfully authentified with PIN : [%s]", socialMediaWrapper.getValidationPin());
+            String msg = String.format("Successfully authenticated with PIN : [%s]", socialMediaWrapper.getValidationPin());
             facesContext.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg));
 
@@ -97,22 +88,21 @@ public class XingAPIBean implements Serializable {
     }
 
 
-    public void runQuery() {
+    public void runQuery(String query) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         try {
 
-            Token accessToken = socialMediaWrapper.getAccessToken();
+
 
             if (!socialMediaWrapper.initialized()) {
-                String msg = "Cannot Perform Query since you are not authentified or your authentication token has expired. Please sign in again into the API";
+                String msg = "Cannot Perform Query since you are not authenticated or your authentication token has expired. Please sign in again into the API";
                 facesContext.addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
                 socialMediaWrapper.reset();
                 return;
             }
 
-            String url =API_BASE_URL + "/v1/users/me";
-            apiResponse = socialMediaWrapper.performQuery(Verb.GET, url);
+            apiResponse = socialMediaWrapper.performQuery(Verb.GET, query);
 
         } catch (Exception e) {
             String msg = String.format(
@@ -157,5 +147,20 @@ public class XingAPIBean implements Serializable {
 
     public void setSocialMediaWrapper(SocialMediaWrapper socialMediaWrapper) {
         this.socialMediaWrapper = socialMediaWrapper;
+    }
+
+
+    private Map<String,String> apiResources = new HashMap<>();
+
+    public Map<String, String> getApiResources() {
+        if(apiResources.isEmpty()){
+                                 apiResources.put("Test", "http://test");
+            apiResources.put("Test2", "http://test2");
+        }
+        return apiResources;
+    }
+
+    public void setApiResources(Map<String, String> apiResources) {
+        this.apiResources = apiResources;
     }
 }

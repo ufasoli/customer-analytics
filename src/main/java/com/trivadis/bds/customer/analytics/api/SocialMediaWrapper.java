@@ -1,12 +1,16 @@
 package com.trivadis.bds.customer.analytics.api;
 
 import com.trivadis.bds.customer.analytics.util.json.JsonUtils;
+import org.scribe.builder.ServiceBuilder;
+import org.scribe.builder.api.Api;
+import org.scribe.builder.api.XingApi;
 import org.scribe.exceptions.OAuthException;
 import org.scribe.model.*;
 import org.scribe.oauth.OAuthService;
 import org.scribe.utils.Preconditions;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * User: ufasoli
@@ -14,25 +18,49 @@ import java.io.IOException;
  * Time: 13:05
  * Project : customer-analytics
  */
-public class SocialMediaWrapper {
+public abstract class SocialMediaWrapper {
 
-    private Token accessToken = null;
-    private Token requestToken = null;
-    private String authorizationUrl;
-    private OAuthService oAuthService;
 
-    private String validationPin;
+    /** API COMMUNICATION **/
+    protected Token accessToken = null;
+    protected Token requestToken = null;
+    protected String authorizationUrl;
+    protected OAuthService oAuthService;
+    protected String validationPin;
 
-    public SocialMediaWrapper(OAuthService oAuthService) {
-        Preconditions.checkNotNull(oAuthService, "oAuthService cannot be null");
-        this.oAuthService = oAuthService;
+
+    /** API SPECIFIC FIELDS **/
+    protected Class<? extends Api> apiClass;
+    protected String apiKey;
+    protected String apiSecret;
+    protected String baseUrl;
+
+
+
+    public SocialMediaWrapper(Class<? extends Api> apiClass, String apiKey, String apiSecret, String baseUrl) {
+        this.apiClass = apiClass;
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
+        this.baseUrl = baseUrl;
         init();
+
     }
 
 
-    public void init() {
-        Preconditions.checkNotNull(oAuthService, "cannot perform reset if oAuthService is null");
 
+    public void init() {
+
+        Preconditions.checkNotNull(apiKey, "apiKey cannot be null");
+        Preconditions.checkNotNull(apiSecret, "apiSecret cannot be null");
+        Preconditions.checkNotNull(apiClass, "apiClass cannot be null");
+        // Initializing OAuth - Service
+        oAuthService = new ServiceBuilder()
+                .provider(apiClass)
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+                .build();
+
+        Preconditions.checkNotNull(oAuthService, "cannot perform initialization if oAuthService is null");
         this.requestToken = oAuthService.getRequestToken();
         this.authorizationUrl = oAuthService.getAuthorizationUrl(requestToken);
     }
@@ -63,7 +91,7 @@ public class SocialMediaWrapper {
         getoAuthService().signRequest(accessToken, request);
         Response response = request.send();
         String jsonResponse = response.getBody();
-        try{
+        try {
 
             jsonResponse = JsonUtils.prettifyJSON(response.getBody());
         } catch (IOException e) {
@@ -74,6 +102,8 @@ public class SocialMediaWrapper {
 
     }
 
+
+    public abstract Map<String, ApiResource> getApiResources();
 
 
 
@@ -118,6 +148,27 @@ public class SocialMediaWrapper {
         this.validationPin = validationPin;
     }
 
+    public Class<? extends Api> getApiClass() {
+        return apiClass;
+    }
 
+    public void setApiClass(Class<? extends Api> apiClass) {
+        this.apiClass = apiClass;
+    }
 
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public String getApiSecret() {
+        return apiSecret;
+    }
+
+    public void setApiSecret(String apiSecret) {
+        this.apiSecret = apiSecret;
+    }
 }
