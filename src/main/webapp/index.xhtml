@@ -3,6 +3,8 @@
         xmlns:h="http://java.sun.com/jsf/html"
         xmlns:ui="http://java.sun.com/jsf/facelets"
         xmlns:p="http://primefaces.org/ui"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:c="http://java.sun.com/jsp/jstl/core"
         template="WEB-INF/template/template.xhtml">
 
     <ui:define name="content">
@@ -11,6 +13,7 @@
         <h:form prependId="false" id="authenticationForm">
 
             <p:fieldset collapsed="true" legend="Api Authentication" toggleable="true">
+
                 <h:panelGrid columns="3" cellpadding="5">
                     <h:outputText  value="Validation URL : "/>
                     <h:outputText id="authorisationUrl" value="#{xingAPIBean.socialMediaWrapper.authorizationUrl}"/>
@@ -19,16 +22,11 @@
 
                     <p:outputLabel for="validationPin" value="Validation Pin :"/>
                     <p:inputText value="#{xingAPIBean.socialMediaWrapper.validationPin}" id="validationPin"/>
-
-
-
                 </h:panelGrid>
+
                 <p:commandButton value="Validate" action="#{xingAPIBean.validateAccess()}"
-
                                  ajax="true"
-
-
-                        update="authorisationUrl,validationPin,:msg"/>
+                                 update="authorisationUrl,validationPin,:msg"/>
 
 
             </p:fieldset>
@@ -36,13 +34,25 @@
         </h:form>
         <h:form id="userForm" prependId="false">
              <p:fieldset id="apiInfo" legend="API Info">
-                 <p:inputText id="currentUser"
+
+                 <p:inputText id="queryUserId"
                               value="#{xingAPIBean.currentUser}"
                               required="true" requiredMessage="User id cannot be null (default is 'me')"
-                               placeholder="Xing user id to display information"/>
+                               placeholder="Search by user id"/>
 
 
-                 <p:commandButton action="#{xingAPIBean.runQuery()}" value="Search" update="userInfo,:msg, :authenticationForm"  ajax="true"/>
+
+                 <p:selectOneMenu value="#{xingAPIBean.currentUser}">
+                     <f:selectItems
+                                value="#{xingAPIBean.apiResources.values()}"
+                                var="resource"
+                                itemLabel="toto"
+                                itemValue="#{resource}"
+                               />
+
+                 </p:selectOneMenu>
+                 <p:commandButton
+                         action="#{xingAPIBean.runQuery()}" value="Search" update="userInfo,:msg, :authenticationForm"  ajax="true"/>
 
                  <p:tabView id="userInfo">
 
@@ -50,8 +60,6 @@
 
                          <p:inputTextarea value="#{xingAPIBean.apiResponse}" cols="150" rows="50"
                                           style="white-space: pre;" />
-
-
                      </p:tab>
 
 

@@ -1,5 +1,6 @@
-package com.trivadis.bds.customer.analytics;
+package com.trivadis.bds.customer.analytics.web.beans.sessions;
 
+import com.trivadis.bds.customer.analytics.api.SocialMediaWrapper;
 import org.scribe.builder.api.DefaultApi10a;
 
 import javax.faces.bean.ManagedBean;
