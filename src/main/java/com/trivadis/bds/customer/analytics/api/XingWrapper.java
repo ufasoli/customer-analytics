@@ -2,8 +2,8 @@ package com.trivadis.bds.customer.analytics.api;
 
 import org.scribe.builder.api.Api;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,26 +17,26 @@ public class XingWrapper extends SocialMediaWrapper {
     static final String API_SECRET = "73612286d1390a5d0a28b3f775feb1897ad66e99";
     static final String BASE_URL = "https://api.xing.com";
 
-    protected Map<String,ApiResource> apiResources = new HashMap<>();
+    protected List<ApiResource> apiResources = new ArrayList<>();
 
 
     public XingWrapper(Class<? extends Api> apiClass) {
         super(apiClass, API_KEY, API_SECRET, BASE_URL);
 
         // User resources
-        apiResources.put("User by Id", new ApiResource(
+        apiResources.add(new ApiResource(
                 "User by Id",
                 baseUrl + "/v1/users/:user_id",
                 "Shows a particular user’s profile. The data returned by this call will be checked against and filtered on the basis of the privacy settings of the requested user"));
 
-        apiResources.put("Current User (me)",
+        apiResources.add(
                 new ApiResource(
                         "Current User (me)",
                         baseUrl + "/v1/users/me",
                         "Shows a particular user’s profile. The data returned by this call will be checked against and filtered on the basis of the privacy settings of the requested user"));
 
 
-        apiResources.put("Current User (me) id_card",
+        apiResources.add(
                 new ApiResource(
                         "Current User (me) id_card",
                         baseUrl + "/v1/users/me/id_card",
@@ -46,8 +46,13 @@ public class XingWrapper extends SocialMediaWrapper {
     }
 
     @Override
-    public Map<String, ApiResource> getApiResources() {
+    public List<ApiResource> getApiResources() {
         return apiResources;
+    }
+
+    @Override
+    public String findUserUrl(){
+       return baseUrl + "/v1/users/:user_id";
     }
 
 

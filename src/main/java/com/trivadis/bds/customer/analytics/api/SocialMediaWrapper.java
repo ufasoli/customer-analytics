@@ -3,14 +3,13 @@ package com.trivadis.bds.customer.analytics.api;
 import com.trivadis.bds.customer.analytics.util.json.JsonUtils;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
-import org.scribe.builder.api.XingApi;
 import org.scribe.exceptions.OAuthException;
 import org.scribe.model.*;
 import org.scribe.oauth.OAuthService;
 import org.scribe.utils.Preconditions;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 /**
  * User: ufasoli
@@ -103,8 +102,9 @@ public abstract class SocialMediaWrapper {
     }
 
 
-    public abstract Map<String, ApiResource> getApiResources();
+    public abstract List<ApiResource> getApiResources();
 
+    public abstract String findUserUrl();
 
 
     public Token getAccessToken() {

@@ -1,13 +1,10 @@
 package com.trivadis.bds.customer.analytics.web.beans.xing;
 
+import com.trivadis.bds.customer.analytics.api.SocialMediaWrapper;
 import com.trivadis.bds.customer.analytics.api.XingWrapper;
 import com.trivadis.bds.customer.analytics.web.beans.sessions.ApiManager;
-import com.trivadis.bds.customer.analytics.api.SocialMediaWrapper;
-import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.XingApi;
-import org.scribe.model.Token;
 import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -88,7 +85,7 @@ public class XingAPIBean implements Serializable {
     }
 
 
-    public void runQuery(String query) {
+    public void findUser() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         try {
 
@@ -102,7 +99,7 @@ public class XingAPIBean implements Serializable {
                 return;
             }
 
-            apiResponse = socialMediaWrapper.performQuery(Verb.GET, query);
+            apiResponse = socialMediaWrapper.performQuery(Verb.GET, socialMediaWrapper.findUserUrl());
 
         } catch (Exception e) {
             String msg = String.format(
