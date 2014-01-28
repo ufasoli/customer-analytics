@@ -4,7 +4,7 @@
         xmlns:ui="http://java.sun.com/jsf/facelets"
         xmlns:p="http://primefaces.org/ui"
         xmlns:f="http://java.sun.com/jsf/core"
-        xmlns:c="http://java.sun.com/jsp/jstl/core"
+
         template="WEB-INF/template/template.xhtml">
 
     <ui:define name="content">
@@ -12,13 +12,15 @@
 
         <h:form prependId="false" id="authenticationForm">
 
+
             <p:fieldset collapsed="true" legend="Api Authentication" toggleable="true">
 
                 <h:panelGrid columns="3" cellpadding="5">
-                    <h:outputText  value="Validation URL : "/>
+                    <h:outputText value="Validation URL : "/>
                     <h:outputText id="authorisationUrl" value="#{xingAPIBean.socialMediaWrapper.authorizationUrl}"/>
                     <h:outputLink
-                            onclick="window.open('#{xingAPIBean.socialMediaWrapper.authorizationUrl}', 'api validation')" value="#" title="open" >Open</h:outputLink>
+                            onclick="window.open('#{xingAPIBean.socialMediaWrapper.authorizationUrl}', 'api validation'); return false;"
+                            value="#" title="open">Open</h:outputLink>
 
                     <p:outputLabel for="validationPin" value="Validation Pin :"/>
                     <p:inputText value="#{xingAPIBean.socialMediaWrapper.validationPin}" id="validationPin"/>
@@ -31,57 +33,90 @@
 
             </p:fieldset>
 
+
         </h:form>
         <h:form id="userForm" prependId="false">
-             <p:fieldset id="apiInfo" legend="API Info">
-                 <h:panelGrid columns="2" cellpadding="5">
 
-                  <p:inputText id="queryUserId"
-                              value="#{xingAPIBean.currentUser}"
-                              required="true" requiredMessage="User id cannot be null (default is 'me')"
-                               placeholder="Search by user id"/>
+            <p:fieldset id="currentUserInfo" legend="Current user">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <h:outputText value="Current User Id :"/>
+                    <h:outputText value="#{xingAPIBean.apiSelectedUser.userId}"/>
 
+                    <h:outputText value="Current User lastname :"/>
+                    <h:outputText value="#{xingAPIBean.apiSelectedUser.lastname}"/>
 
-                 <p:commandButton
-                         action="#{xingAPIBean.findUser()}"
-                         value="Search User"
-                         update="userForm, :msg, :authenticationForm"  ajax="true"/>
+                    <h:outputText value="Current User Firstname :"/>
+                    <h:outputText value="#{xingAPIBean.apiSelectedUser.name}"/>
 
 
+                    <h:outputText value="Current User Email :"/>
+                    <h:outputText value="#{xingAPIBean.apiSelectedUser.email}"/>
 
-                 <p:selectOneMenu value="#{xingAPIBean.currentResource}" label="User Resource"
-                                  disabled="#{xingAPIBean.currentUser eq null}">
+                </h:panelGrid>
 
-                     <f:selectItems
+            </p:fieldset>
+
+            <p:fieldset id="apiInfo" legend="API Info">
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <p:inputText id="queryUserId"
+                                 value="#{xingAPIBean.currentUserQuery}"
+                                 required="true"
+                                 requiredMessage="User id cannot be null. You can use 'me' if you do not know the id and want to retrieve current API user"
+                                 placeholder="User search query either id or email"/>
+
+
+                    <p:selectOneMenu value="#{xingAPIBean.userSearchMethod}"
+                                     label="Search method">
+
+                        <f:selectItems
+                                value="#{xingAPIBean.searchMethods}"
+                                />
+
+
+                    </p:selectOneMenu>
+
+                    <p:commandButton
+                            action="#{xingAPIBean.findUser()}"
+                            value="Search User"
+                            update="userForm,:msg,:authenticationForm" ajax="true"/>
+
+
+                    <p:selectOneMenu value="#{xingAPIBean.currentResource}"
+                                     label="User Resource"
+                                     disabled="#{xingAPIBean.apiSelectedUser eq null or xingAPIBean.apiSelectedUser.userId eq null}"
+                            >
+
+                        <f:selectItems
                                 value="#{xingAPIBean.socialMediaWrapper.apiResources}"
-                                var="resource"
-                                itemLabel="#{resource.title}"
-                                itemValue="#{resource.url}"
-                               />
+                                var="r"
+                                itemLabel="#{r.title}"
+                                itemValue="#{r.url}"/>
 
 
-                 </p:selectOneMenu>
+                    </p:selectOneMenu>
 
-                 <p:commandButton
-                         action="#{xingAPIBean.runQuery()}"
-                         value="Show Resource" update="userInfo,:msg, :authenticationForm"  ajax="true"/>
-
-
-                   </h:panelGrid>
-                 <p:tabView id="userInfo">
-
-                     <p:tab id="apiResponse" title="Api Respnse">
-
-                         <p:inputTextarea value="#{xingAPIBean.apiResponse}" cols="150" rows="50"
-                                          style="white-space: pre;" />
-                     </p:tab>
+                    <p:commandButton
+                            action="#{xingAPIBean.runQuery()}"
+                            value="Show Resource" update="userForm, :msg, :authenticationForm"
+                            ajax="true"
+                            disabled="#{xingAPIBean.apiSelectedUser eq null or xingAPIBean.apiSelectedUser.userId eq null}"/>
 
 
-                 </p:tabView>
-             </p:fieldset>
+                </h:panelGrid>
+                <p:tabView id="userInfo">
+
+                    <p:tab id="apiResponse" title="Api Response">
+
+                        <p:inputTextarea value="#{xingAPIBean.apiResponse}" cols="150" rows="50"
+                                         style="white-space: pre;"/>
+                    </p:tab>
+
+
+                </p:tabView>
+            </p:fieldset>
 
         </h:form>
-
 
 
     </ui:define>

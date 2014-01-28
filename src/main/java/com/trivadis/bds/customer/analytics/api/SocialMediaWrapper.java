@@ -1,5 +1,7 @@
 package com.trivadis.bds.customer.analytics.api;
 
+import com.trivadis.bds.customer.analytics.api.exceptions.ApiResponseException;
+import com.trivadis.bds.customer.analytics.api.model.ApiResource;
 import com.trivadis.bds.customer.analytics.util.json.JsonUtils;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
@@ -16,6 +18,8 @@ import java.util.List;
  * Date: 26/01/2014
  * Time: 13:05
  * Project : customer-analytics
+ *
+ * Wrapper utility class to encapsulate the different steps of API communication and initialization
  */
 public abstract class SocialMediaWrapper {
 
@@ -46,7 +50,14 @@ public abstract class SocialMediaWrapper {
     }
 
 
-
+    /**
+     * Initializes the Wrapper by :
+     * <ul>
+     *     <li>Initializing the ApiService corresponding to the selected provider</li>
+     *     <li>Generates the request token</li>
+     *     <li>Generates the authorization url</li>
+     * </ul>
+     */
     public void init() {
 
         Preconditions.checkNotNull(apiKey, "apiKey cannot be null");
@@ -64,12 +75,21 @@ public abstract class SocialMediaWrapper {
         this.authorizationUrl = oAuthService.getAuthorizationUrl(requestToken);
     }
 
+    /**
+     * Reinitializes the wrapper by basically recreating the request token, authorization url and oAuthService
+     * @see SocialMediaWrapper#init()
+     */
     public void reset() {
         Preconditions.checkNotNull(oAuthService, "cannot perform reset if oAuthService is null");
         init();
     }
 
+    /**
+     * Generates the access token required to perform queries on the underlying API
+     * @throws OAuthException
+     */
     public void generateAccessToken() throws OAuthException {
+
         Preconditions.checkNotNull(oAuthService, "cannot perform validation if validationPin is null");
         Verifier verifier = new Verifier(validationPin);
         accessToken = oAuthService.getAccessToken(requestToken, verifier);
@@ -78,17 +98,36 @@ public abstract class SocialMediaWrapper {
 
     }
 
-
+    /**
+     *
+     * @return true if ( accessToken, oAuthService) != null && request token == null else false
+     */
     public Boolean initialized() {
 
         return (accessToken != null && oAuthService != null) && requestToken == null;
     }
 
 
-    public String performQuery(Verb verb, String url) {
-        OAuthRequest request = new OAuthRequest(Verb.GET, url);
+    /**
+     * Runs the HTTP query on the url using the provided HTTP verb
+     * @param verb HTTP verb to perform the query (GET, POST, etc.)
+     * @param url the url to where run the query
+     * @return the API response body
+     * @throws ApiResponseException  if the API status code != 200
+     */
+    public String performQuery(Verb verb, String url) throws ApiResponseException {
+
+        OAuthRequest request = new OAuthRequest(verb, url);
         getoAuthService().signRequest(accessToken, request);
         Response response = request.send();
+
+        if(response.getCode() != 200){
+            throw new ApiResponseException(
+                    String.format("Error while performing API query. HTTP status [%s] on url [%s]. Error [%s]",
+                            response.getCode(),
+                            url,
+                            response.getMessage()));
+        }
         String jsonResponse = response.getBody();
         try {
 
@@ -102,9 +141,24 @@ public abstract class SocialMediaWrapper {
     }
 
 
+    /**
+     * Returns the list of API resources available for a given wrapper
+     *
+     * @return the list of resources (Urls) that can be consumed on a given Web servive
+     */
     public abstract List<ApiResource> getApiResources();
 
-    public abstract String findUserUrl();
+    /**
+     *
+     * @return The url that can be used by the client to find a user by it's ID
+     */
+    public abstract String findUserByIdUrl();
+
+    /**
+     *
+     * @return The url that can be used by the client to find a user by it's email
+     */
+    public abstract String findUserByEmailUrl();
 
 
     public Token getAccessToken() {

@@ -1,4 +1,4 @@
-package com.trivadis.bds.customer.analytics.util;
+package com.trivadis.bds.customer.analytics.util.string;
 
 import org.antlr.stringtemplate.StringTemplate;
 

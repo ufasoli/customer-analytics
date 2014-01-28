@@ -1,10 +1,10 @@
 package com.trivadis.bds.customer.analytics.web.beans.xing;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.trivadis.bds.customer.analytics.api.SocialMediaWrapper;
 import com.trivadis.bds.customer.analytics.api.XingWrapper;
-import com.trivadis.bds.customer.analytics.util.StringUtils;
+import com.trivadis.bds.customer.analytics.api.model.ApiSelectedUser;
 import com.trivadis.bds.customer.analytics.util.json.JsonUtils;
+import com.trivadis.bds.customer.analytics.util.string.StringUtils;
 import com.trivadis.bds.customer.analytics.web.beans.sessions.ApiManager;
 import org.scribe.builder.api.XingApi;
 import org.scribe.model.Verb;
@@ -16,7 +16,9 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,14 +32,17 @@ import java.util.Map;
 public class XingAPIBean implements Serializable {
 
 
-
-
     @ManagedProperty(value = "#{apiManager}")
     private ApiManager apiManager;
 
     private String apiResponse;
 
-    private String currentUser;
+    private String currentUserQuery;
+
+    private ApiSelectedUser apiSelectedUser = new ApiSelectedUser();
+
+    private List<String> searchMethods = Arrays.asList("BY_ID", "BY_EMAIL");
+    private String userSearchMethod = "BY_ID";
 
     private String currentResource;
 
@@ -95,6 +100,86 @@ public class XingAPIBean implements Serializable {
         try {
 
 
+            if (!socialMediaWrapper.initialized()) {
+                String msg = "Cannot Perform Query since you are not authenticated or your authentication token has expired. Please sign in again into the API";
+                facesContext.addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
+                socialMediaWrapper.reset();
+                return;
+            }
+
+            if (currentUserQuery == null || currentUserQuery.isEmpty()) {
+                String msg = "Cannot Perform Query since current user is null";
+                facesContext.addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
+
+                return;
+            }
+
+
+            if (userSearchMethod.equals("BY_ID")) {
+
+                Map<String, Object> values = new HashMap<>();
+                values.put("user_id", currentUserQuery);
+
+
+                apiResponse = socialMediaWrapper.performQuery(Verb.GET,
+                        StringUtils.formatString(socialMediaWrapper.findUserByIdUrl(), values));
+
+
+                if (apiResponse != null && !apiResponse.isEmpty()) {
+
+                    // override "me" with the user's real id
+                    apiSelectedUser.setUserId(JsonUtils.stringToJson(apiResponse).findValue("users").findValue("id").asText());
+                    apiSelectedUser.setName(JsonUtils.stringToJson(apiResponse).findValue("users").findValue("first_name").asText());
+                    apiSelectedUser.setLastname(JsonUtils.stringToJson(apiResponse).findValue("users").findValue("last_name").asText());
+                    apiSelectedUser.setEmail(JsonUtils.stringToJson(apiResponse).findValue("active_email").asText());
+
+                    String msg = "User found";
+                    facesContext.addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg));
+                }
+
+            } else if (userSearchMethod.equals("BY_EMAIL")) {
+
+                apiResponse = socialMediaWrapper.performQuery(
+                        Verb.GET,
+                        socialMediaWrapper.findUserByEmailUrl() + "?emails=" + currentUserQuery
+                );
+
+
+                if (apiResponse != null && !apiResponse.isEmpty()) {
+
+                    apiSelectedUser.setUserId(JsonUtils.stringToJson(apiResponse).findValue("results").findValue("items").findValue("user").findValue("id").asText());
+                    apiSelectedUser.setName(null);
+                    apiSelectedUser.setLastname(null);
+                    apiSelectedUser.setEmail(currentUserQuery);
+
+                    String msg = String.format("User found using email [%s]", currentUserQuery);
+                    facesContext.addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg));
+                } else {
+                    String msg = String.format("Unable to find user with email [%s]", currentUserQuery);
+                    facesContext.addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
+                }
+            }
+        } catch (Exception e) {
+            String msg = String.format(
+                    "An error occurred while performing the query. error : [%s] ", e.getMessage());
+            facesContext.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
+        }
+
+    }
+
+
+    public void runQuery() {
+
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        try {
+
 
             if (!socialMediaWrapper.initialized()) {
                 String msg = "Cannot Perform Query since you are not authenticated or your authentication token has expired. Please sign in again into the API";
@@ -104,7 +189,7 @@ public class XingAPIBean implements Serializable {
                 return;
             }
 
-            if(currentUser == null || currentUser.isEmpty()){
+            if (currentUserQuery == null || currentUserQuery.isEmpty()) {
                 String msg = "Cannot Perform Query since current user is null";
                 facesContext.addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
@@ -112,25 +197,31 @@ public class XingAPIBean implements Serializable {
                 return;
             }
 
-            String findUserUrl = socialMediaWrapper.findUserUrl();
+
+            if (currentResource == null || currentResource.isEmpty()) {
+                String msg = "Cannot Perform Query no resource has been selected";
+                facesContext.addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
+
+                return;
+            }
 
             Map<String, Object> values = new HashMap<>();
-            values.put("user_id", currentUser);
+            values.put("user_id", apiSelectedUser.getUserId());
 
             apiResponse = socialMediaWrapper.performQuery(Verb.GET,
-                    StringUtils.formatString(socialMediaWrapper.findUserUrl(), values));
+                    StringUtils.formatString(currentResource, values));
 
 
-            if(currentUser.equals("me") && apiResponse != null && !apiResponse.isEmpty() ){
+            if (apiResponse != null && !apiResponse.isEmpty() && currentResource.equals(socialMediaWrapper.findUserByIdUrl())) {
 
-                JsonNode node = JsonUtils.stringToJson(apiResponse);
 
-                // override "me" with the user's real id
-                currentUser = JsonUtils.stringToJson(apiResponse).findValue("users").findValue("id").asText();
+                apiSelectedUser.setName(JsonUtils.stringToJson(apiResponse).findValue("users").findValue("first_name").asText());
+                apiSelectedUser.setLastname(JsonUtils.stringToJson(apiResponse).findValue("users").findValue("last_name").asText());
+                apiSelectedUser.setEmail(JsonUtils.stringToJson(apiResponse).findValue("active_email").asText());
 
 
             }
-
 
 
         } catch (Exception e) {
@@ -139,7 +230,6 @@ public class XingAPIBean implements Serializable {
             facesContext.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
         }
-
     }
 
 
@@ -152,8 +242,6 @@ public class XingAPIBean implements Serializable {
     }
 
 
-
-
     public ApiManager getApiManager() {
         return apiManager;
     }
@@ -162,12 +250,12 @@ public class XingAPIBean implements Serializable {
         this.apiManager = apiManager;
     }
 
-    public String getCurrentUser() {
-        return currentUser;
+    public String getCurrentUserQuery() {
+        return currentUserQuery;
     }
 
-    public void setCurrentUser(String currentUser) {
-        this.currentUser = currentUser;
+    public void setCurrentUserQuery(String currentUserQuery) {
+        this.currentUserQuery = currentUserQuery;
     }
 
     public SocialMediaWrapper getSocialMediaWrapper() {
@@ -184,5 +272,29 @@ public class XingAPIBean implements Serializable {
 
     public void setCurrentResource(String currentResource) {
         this.currentResource = currentResource;
+    }
+
+    public ApiSelectedUser getApiSelectedUser() {
+        return apiSelectedUser;
+    }
+
+    public void setApiSelectedUser(ApiSelectedUser apiSelectedUser) {
+        this.apiSelectedUser = apiSelectedUser;
+    }
+
+    public String getUserSearchMethod() {
+        return userSearchMethod;
+    }
+
+    public void setUserSearchMethod(String userSearchMethod) {
+        this.userSearchMethod = userSearchMethod;
+    }
+
+    public List<String> getSearchMethods() {
+        return searchMethods;
+    }
+
+    public void setSearchMethods(List<String> searchMethods) {
+        this.searchMethods = searchMethods;
     }
 }

@@ -1,4 +1,4 @@
-package com.trivadis.bds.customer.analytics.api;
+package com.trivadis.bds.customer.analytics.api.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -75,15 +75,13 @@ public class ApiResource implements Serializable {
 
         ApiResource that = (ApiResource) o;
 
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (!url.equals(that.url)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return title != null ? title.hashCode() : 0;
+        return url.hashCode();
     }
-
-
 }
