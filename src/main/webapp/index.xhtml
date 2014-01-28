@@ -30,11 +30,18 @@
                                  ajax="true"
                                  update="authorisationUrl,validationPin,:msg"/>
 
+                <p:commandButton value="Generate new validation url" action="#{xingAPIBean.resetWrapper()}"
+                                 ajax="true"
+                                 update="authorisationUrl,validationPin,:msg"/>
+
 
             </p:fieldset>
 
 
         </h:form>
+
+        <br />
+
         <h:form id="userForm" prependId="false">
 
             <p:fieldset id="currentUserInfo" legend="Current user">
@@ -55,7 +62,7 @@
                 </h:panelGrid>
 
             </p:fieldset>
-
+              <br />
             <p:fieldset id="apiInfo" legend="API Info">
                 <h:panelGrid columns="3" cellpadding="5">
 
@@ -63,7 +70,9 @@
                                  value="#{xingAPIBean.currentUserQuery}"
                                  required="true"
                                  requiredMessage="User id cannot be null. You can use 'me' if you do not know the id and want to retrieve current API user"
-                                 placeholder="User search query either id or email"/>
+                                 placeholder="User search query either id or email"
+                                   size="45"
+                            />
 
 
                     <p:selectOneMenu value="#{xingAPIBean.userSearchMethod}"

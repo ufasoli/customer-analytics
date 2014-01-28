@@ -64,7 +64,14 @@ public class XingAPIBean implements Serializable {
             socialMediaWrapper.init();
         }
 
+    }
 
+
+    public void resetWrapper(){
+        socialMediaWrapper.reset();
+
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "A new validation url was generated ", "A new validation url was generated"));
     }
 
     public void validateAccess() {
@@ -226,7 +233,9 @@ public class XingAPIBean implements Serializable {
 
         } catch (Exception e) {
             String msg = String.format(
-                    "An error occurred while performing the query. error : [%s] ", e.getLocalizedMessage());
+                    "An error occurred while performing the query. error : [%s] ", e.getMessage());
+
+            apiResponse = null;
             facesContext.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
         }
